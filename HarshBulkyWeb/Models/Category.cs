@@ -7,6 +7,6 @@ namespace HarshBulkyWeb.Models
         public int CategoryId { get; set; }  // if the name is Id or CategoryId, then .NET CORE will treat it as a PK, so no need to write [Key] above, if the name is something else, then we have to use [Key] to explicitly specify that its a PK.
         [Required]
         public string Name { get; set; }
-        public string DisplayOrder { get; set; }
+        public int DisplayOrder { get; set; }
     }
 }
