@@ -32,10 +32,6 @@ namespace HarshBulkyWeb.Controllers
             {
                 ModelState.AddModelError("Name", "Category Name and Display Order cannot be same.");
             }
-            if(obj.Name != null && obj.Name.ToLower() == "test")
-            {
-                ModelState.AddModelError("", "Test is an invalid Value.");
-            }
 
             if (ModelState.IsValid)
             {
