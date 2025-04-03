@@ -76,7 +76,10 @@ namespace HarshBulkyWeb.Controllers
             }
             return View();
 
-            var categoryFromDb = _db.Categories.Find(obj.CategoryId);
+
+            // old way of doing things. Tried by myself 
+
+           /* var categoryFromDb = _db.Categories.Find(obj.CategoryId);
 
             if (categoryFromDb == null) { return NotFound(); }
 
@@ -85,7 +88,7 @@ namespace HarshBulkyWeb.Controllers
 
             _db.SaveChanges();
 
-            return View();
+            return View();*/
         }
 
 
