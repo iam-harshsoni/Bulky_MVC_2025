@@ -28,6 +28,15 @@ namespace HarshBulkyWeb.Controllers
         [HttpPost]
         public IActionResult Create(Category obj)
         {
+            if(obj.Name == obj.DisplayOrder.ToString())
+            {
+                ModelState.AddModelError("Name", "Category Name and Display Order cannot be same.");
+            }
+            if(obj.Name.ToLower() == "test")
+            {
+                ModelState.AddModelError("", "Test is an invalid Value.");
+            }
+
             if (ModelState.IsValid)
             {
                 _db.Categories.Add(obj);
