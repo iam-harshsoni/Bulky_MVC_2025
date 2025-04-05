@@ -64,5 +64,30 @@ namespace HarshBulkyWeb.Areas.Admin.Controllers
         }
 
 
+        public IActionResult Delete(int id)
+        {
+            Product product = _unitOfWork.Product.Get(u => u.Id == id);
+            return View(product);
+        }
+
+        [HttpPost]
+        [ActionName("Delete")]
+        public IActionResult DeleteProduct(int id)
+        {
+            if (ModelState.IsValid)
+            {
+                Product product = _unitOfWork.Product.Get(u => u.Id == id);
+
+                if (product==null)  return NotFound();
+
+                _unitOfWork.Product.Remove(product);
+                _unitOfWork.Save();
+                TempData["success"] = "Product deleted successfully!";
+
+                return RedirectToAction("Index");
+            }
+            return View();
+        }
+
     }
 }
