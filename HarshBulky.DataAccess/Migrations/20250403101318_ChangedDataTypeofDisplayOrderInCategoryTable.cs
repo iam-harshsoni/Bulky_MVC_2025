@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace HarshBulkyWeb.Migrations
+namespace HarshBulky.DataAccess.Migrations
 {
     /// <inheritdoc />
     public partial class ChangedDataTypeofDisplayOrderInCategoryTable : Migration

@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using HarshBulkyWeb.Models;
+using HarshBulky.Models.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HarshBulkyWeb.Controllers

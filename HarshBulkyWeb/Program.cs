@@ -1,4 +1,4 @@
-using HarshBulkyWeb.Data;
+using HarshBulky.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

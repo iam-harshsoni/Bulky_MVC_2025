@@ -1,7 +1,8 @@
-﻿using HarshBulkyWeb.Models;
+﻿using HarshBulky.Models.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace HarshBulkyWeb.Data
+
+namespace HarshBulky.DataAccess.Data
 {
     //Primary Constructor
     public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
