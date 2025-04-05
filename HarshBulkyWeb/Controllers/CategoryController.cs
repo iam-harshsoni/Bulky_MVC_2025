@@ -1,4 +1,5 @@
 ﻿using HarshBulky.DataAccess.Data;
+using HarshBulky.DataAccess.Repository.IRepository;
 using HarshBulky.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,16 +8,16 @@ namespace HarshBulkyWeb.Controllers
     public class CategoryController : Controller
     {
 
-        private readonly ApplicationDbContext _db;
+        private readonly ICategoryRepository _categoryRepo;
 
-        public CategoryController(ApplicationDbContext db)
+        public CategoryController(ICategoryRepository categoryRepo)
         {
-            _db = db;
+            _categoryRepo = categoryRepo;
         }
 
         public IActionResult Index()
         {
-            List<Category> objCategoryList = _db.Categories.ToList();
+            List<Category> objCategoryList = _categoryRepo.GetAll().ToList();
             return View(objCategoryList);
         }
 
@@ -35,8 +36,8 @@ namespace HarshBulkyWeb.Controllers
 
             if (ModelState.IsValid)
             {
-                _db.Categories.Add(obj);
-                _db.SaveChanges();
+                _categoryRepo.Add(obj);
+                _categoryRepo.Save();
                 TempData["success"] = "Category Created Successfully!";
                 return RedirectToAction("Index");
             }
@@ -48,7 +49,7 @@ namespace HarshBulkyWeb.Controllers
         {
             if (id == null || id == 0) { return NotFound(); }
 
-            var categoryFromDb = _db.Categories.Find(id);
+            var categoryFromDb = _categoryRepo.Get(x => x.CategoryId == id);
             //  var categoryFromDb1 = _db.Categories.FirstOrDefault(x=>x.CategoryId == id); //best approach
             //  var categoryFromDb3 = _db.Categories.Where(x => x.CategoryId == id).FirstOrDefault();  // only when there is any customization
 
@@ -62,8 +63,8 @@ namespace HarshBulkyWeb.Controllers
         {
             if (ModelState.IsValid)
             {
-                _db.Categories.Update(obj);
-                _db.SaveChanges();
+                _categoryRepo.Update(obj);
+                _categoryRepo.Save();
                 TempData["success"] = "Category Updated Successfully!";
                 return RedirectToAction("Index");
 
@@ -76,7 +77,7 @@ namespace HarshBulkyWeb.Controllers
         {
             if (id == null || id == 0) { return NotFound(); }
 
-            var categoryFromDb = _db.Categories.Find(id);
+            var categoryFromDb = _categoryRepo.Get(x => x.CategoryId == id);
             //  var categoryFromDb1 = _db.Categories.FirstOrDefault(x=>x.CategoryId == id); //best approach
             //  var categoryFromDb3 = _db.Categories.Where(x => x.CategoryId == id).FirstOrDefault();  // only when there is any customization
 
@@ -88,12 +89,12 @@ namespace HarshBulkyWeb.Controllers
         [HttpPost, ActionName("Delete")]
         public IActionResult DeletePOST(int? id)
         {
-            Category obj = _db.Categories.Find(id);
+            Category obj = _categoryRepo.Get(x => x.CategoryId == id);
 
             if (obj == null) { return NotFound(); }
 
-            _db.Categories.Remove(obj);
-            _db.SaveChanges();
+            _categoryRepo.Remove(obj);
+            _categoryRepo.Save();
             TempData["success"] = "Category Deleted Successfully!";
             return RedirectToAction("Index");
 
