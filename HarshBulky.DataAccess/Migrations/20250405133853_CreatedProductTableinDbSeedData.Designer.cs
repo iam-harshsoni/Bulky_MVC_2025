@@ -3,6 +3,7 @@ using HarshBulky.DataAccess.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HarshBulky.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250405133853_CreatedProductTableinDbSeedData")]
+    partial class CreatedProductTableinDbSeedData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -107,7 +110,7 @@ namespace HarshBulky.DataAccess.Migrations
                         {
                             Id = 1,
                             Author = "John Doe",
-                            Description = "A static description for testing.",
+                            Description = "A static description.",
                             ISBN = "1234567890123",
                             ListPrice = 100.0,
                             Price = 95.0,
@@ -119,49 +122,13 @@ namespace HarshBulky.DataAccess.Migrations
                         {
                             Id = 2,
                             Author = "Jane Smith",
-                            Description = "Another static description for testing.",
+                            Description = "Another static description.",
                             ISBN = "9876543210987",
                             ListPrice = 120.0,
                             Price = 110.0,
                             Price100 = 96.0,
                             Price50 = 60.0,
                             Title = "Great Gadget"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Author = "Emily Johnson",
-                            Description = "Yet another static description for testing.",
-                            ISBN = "3216549870123",
-                            ListPrice = 150.0,
-                            Price = 140.0,
-                            Price100 = 120.0,
-                            Price50 = 75.0,
-                            Title = "Super Widget"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Author = "Michael Brown",
-                            Description = "A new static description for testing purposes.",
-                            ISBN = "4567891230987",
-                            ListPrice = 80.0,
-                            Price = 75.0,
-                            Price100 = 64.0,
-                            Price50 = 40.0,
-                            Title = "Amazing Device"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Author = "Sarah White",
-                            Description = "Final static description for testing.",
-                            ISBN = "7890123456789",
-                            ListPrice = 200.0,
-                            Price = 190.0,
-                            Price100 = 160.0,
-                            Price50 = 100.0,
-                            Title = "Ultimate Tool"
                         });
                 });
 #pragma warning restore 612, 618
