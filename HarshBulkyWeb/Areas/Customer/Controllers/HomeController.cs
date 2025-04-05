@@ -2,8 +2,9 @@ using System.Diagnostics;
 using HarshBulky.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HarshBulkyWeb.Controllers
+namespace HarshBulkyWeb.Areas.Customer.Controllers
 {
+    [Area("Customer")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

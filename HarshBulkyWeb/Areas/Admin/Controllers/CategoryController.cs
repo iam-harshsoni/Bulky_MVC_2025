@@ -3,8 +3,9 @@ using HarshBulky.DataAccess.Repository.IRepository;
 using HarshBulky.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HarshBulkyWeb.Controllers
+namespace HarshBulkyWeb.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class CategoryController : Controller
     {
 
