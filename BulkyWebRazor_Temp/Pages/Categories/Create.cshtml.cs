@@ -7,9 +7,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 namespace BulkyWebRazor_Temp.Pages.Categories
 {
     [BindProperties]  // Also use this instead of [BindProperty] if we have more than one properties to bind.
-    public class CreateModel : PageModel
+    public class CreateModel(ApplicationDbContext db) : PageModel
     {
-        private readonly ApplicationDbContext _db;
+        private readonly ApplicationDbContext _db = db;
 
         /*
             `BindProperty` in Razor Pages automatically binds form data to the property, 
@@ -18,15 +18,11 @@ namespace BulkyWebRazor_Temp.Pages.Categories
          */
 
         [BindProperty]
-        public Category Category { get; set; }
-        public CreateModel(ApplicationDbContext db)
-        {
-            _db = db;
-        }
+        public required Category Category { get; set; }
+
         public void OnGet()
         {
         }
-
         public IActionResult OnPost()
         {
             if (ModelState.IsValid)
@@ -35,9 +31,7 @@ namespace BulkyWebRazor_Temp.Pages.Categories
                 _db.SaveChanges();
                 return RedirectToPage("Index");
             }
-
             return RedirectToPage("Create");
-
         }
     }
 }
