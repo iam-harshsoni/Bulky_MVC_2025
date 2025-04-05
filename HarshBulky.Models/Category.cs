@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace HarshBulky.Models.Models
+namespace HarshBulky.Models
 {
     public class Category
     {

@@ -1,5 +1,5 @@
 ﻿using HarshBulky.DataAccess.Data;
-using HarshBulky.Models.Models;
+using HarshBulky.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HarshBulkyWeb.Controllers

@@ -1,4 +1,4 @@
-namespace HarshBulky.Models.Models
+namespace HarshBulky.Models
 {
     public class ErrorViewModel
     {

@@ -1,4 +1,4 @@
-﻿using HarshBulky.Models.Models;
+﻿using HarshBulky.Models;
 using Microsoft.EntityFrameworkCore;
 
 
