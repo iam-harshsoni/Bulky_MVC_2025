@@ -18,8 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HarshBulky.DataAccess\HarshBulky.DataAccess.csproj" />
-    <ProjectReference Include="..\HarshBulky.Models\HarshBulky.Models.csproj" />
-    <ProjectReference Include="..\HarshBulky.Utility\HarshBulky.Utility.csproj" />
   </ItemGroup>
 
 </Project>
