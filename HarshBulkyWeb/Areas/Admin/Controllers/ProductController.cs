@@ -27,6 +27,19 @@ namespace HarshBulkyWeb.Areas.Admin.Controllers
 
         public IActionResult Create()
         {
+            /*  
+              Projections in EF Core. Very Powerfull feature 
+              Coverting IEnumerable<Category> to IEnumerable<SelectListItem> dynamically in single command.
+           */
+
+            IEnumerable<SelectListItem> categoryList = _unitOfWork.Category.GetAll().
+                Select(u => new SelectListItem
+                {
+                    Text = u.Name,
+                    Value = u.CategoryId.ToString()
+                });
+
+            ViewBag.CategoryList = categoryList;  //using ViewBag to send the categoryList to view.
             return View();
         }
 
@@ -66,18 +79,6 @@ namespace HarshBulkyWeb.Areas.Admin.Controllers
         public IActionResult Delete(int id)
         {
             Product product = _unitOfWork.Product.Get(u => u.Id == id);
-            
-            /*  
-                Projections in EF Core. Very Powerfull feature 
-                Coverting IEnumerable<Category> to IEnumerable<SelectListItem> dynamically in single command.
-             */
-
-            IEnumerable<SelectListItem> categoryList = _unitOfWork.Category.GetAll().
-                Select(u => new SelectListItem
-                {
-                    Text = u.Name,
-                    Value = u.CategoryId.ToString()
-                });
             return View(product);
         }
 
