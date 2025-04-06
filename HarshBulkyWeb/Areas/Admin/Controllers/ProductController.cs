@@ -2,6 +2,7 @@
 using HarshBulky.Models;
 using Humanizer.Localisation.DateToOrdinalWords;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
 using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages;
 
@@ -62,11 +63,21 @@ namespace HarshBulkyWeb.Areas.Admin.Controllers
             }
             return View();
         }
-
-
         public IActionResult Delete(int id)
         {
             Product product = _unitOfWork.Product.Get(u => u.Id == id);
+            
+            /*  
+                Projections in EF Core. Very Powerfull feature 
+                Coverting IEnumerable<Category> to IEnumerable<SelectListItem> dynamically in single command.
+             */
+
+            IEnumerable<SelectListItem> categoryList = _unitOfWork.Category.GetAll().
+                Select(u => new SelectListItem
+                {
+                    Text = u.Name,
+                    Value = u.CategoryId.ToString()
+                });
             return View(product);
         }
 

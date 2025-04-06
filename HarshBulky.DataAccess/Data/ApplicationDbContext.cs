@@ -32,7 +32,8 @@ namespace HarshBulky.DataAccess.Data
                     Price = 95.0,
                     Price50 = 50.0,
                     Price100 = 80.0,
-                    CategoryId=3
+                    CategoryId=3,
+                    ImageUrl=""
                 },
                 new Product
                 {
@@ -45,7 +46,8 @@ namespace HarshBulky.DataAccess.Data
                     Price = 110.0,
                     Price50 = 60.0,
                     Price100 = 96.0,
-                    CategoryId = 13
+                    CategoryId = 13,
+                    ImageUrl = ""
                 },
                 new Product
                 {
@@ -58,7 +60,8 @@ namespace HarshBulky.DataAccess.Data
                     Price = 140.0,
                     Price50 = 75.0,
                     Price100 = 120.0,
-                    CategoryId = 16
+                    CategoryId = 16,
+                    ImageUrl = ""
                 },
                 new Product
                 {
@@ -71,7 +74,8 @@ namespace HarshBulky.DataAccess.Data
                     Price = 75.0,
                     Price50 = 40.0,
                     Price100 = 64.0,
-                    CategoryId = 3
+                    CategoryId = 3,
+                    ImageUrl = ""
                 },
                 new Product
                 {
@@ -84,7 +88,8 @@ namespace HarshBulky.DataAccess.Data
                     Price = 190.0,
                     Price50 = 100.0,
                     Price100 = 160.0,
-                    CategoryId = 13
+                    CategoryId = 13,
+                    ImageUrl = ""
                 }
             );
         }
