@@ -64,7 +64,7 @@ namespace HarshBulkyWeb.Areas.Admin.Controllers
                 if (file != null)
                 {
                     // saving uploaded file into folder.
-                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.Name);
+                    string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
                     string productPath = Path.Combine(wwwRootPath, @"images\product");
 
                     using (var fileStream = new FileStream(Path.Combine(productPath, fileName), FileMode.Create))
