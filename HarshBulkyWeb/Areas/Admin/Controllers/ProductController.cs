@@ -39,7 +39,16 @@ namespace HarshBulkyWeb.Areas.Admin.Controllers
                     Value = u.CategoryId.ToString()
                 });
 
-            ViewBag.CategoryList = categoryList;  //using ViewBag to send the categoryList to view.
+
+            /*
+             Note:  ViewBad internally inserts data into ViewData dictionary. 
+                    So the key of ViewData and property of ViewBad must NOT match
+                    what does this mean, explain in simple terms with example
+             */
+
+            //ViewBag.CategoryList = categoryList;  //using ViewBag to send the categoryList to view.
+
+            ViewData["CategoryList"]= categoryList;
             return View();
         }
 
