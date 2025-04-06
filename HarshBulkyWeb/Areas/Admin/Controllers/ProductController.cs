@@ -86,7 +86,7 @@ namespace HarshBulkyWeb.Areas.Admin.Controllers
                     productVM.Product.ImageUrl = @"\images\product\" + fileName;
                 }
 
-                if(productVM.Product.Id == 0)
+                if (productVM.Product.Id == 0)
                 {
                     //add
                     _unitOfWork.Product.Add(productVM.Product);
@@ -97,7 +97,7 @@ namespace HarshBulkyWeb.Areas.Admin.Controllers
                     _unitOfWork.Product.Update(productVM.Product);
                 }
 
-                    
+
                 _unitOfWork.Save();
                 TempData["success"] = "Product created successfully!";
 
@@ -141,6 +141,17 @@ namespace HarshBulkyWeb.Areas.Admin.Controllers
             }
             return View();
         }
+
+        #region API Call
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            List<Product> products = _unitOfWork.Product.GetAll("Category").ToList();
+            return Json(new { data = products });
+        }
+
+        #endregion
 
     }
 }
