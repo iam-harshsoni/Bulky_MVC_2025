@@ -19,12 +19,11 @@
 				<div class="form-floating py-2 col-12">
 					<input asp-for="Product.Title" class="form-control border-0 shadow" placeholder="Title" />
 					<label asp-for="Product.Title" class="ms-2"></label>
-					<span asp-validation-for="Product.Title" class="text-danger"></span>
 				</div>
 
-				<div class="form-floating py-2 col-12">
-					<textarea asp-for="Product.Description" class="form-control border-0 shadow" placeholder="Description" rows="5"></textarea>
-					<label asp-for="Product.Description" class="ms-2"></label>
+				<div class="py-2 col-12">
+					<label asp-for="Product.Description" class="ms-2 text-muted"></label>
+					<textarea asp-for="Product.Description" class="form-control border-0 shadow" rows="5"></textarea>
 					<span asp-validation-for="Product.Description" class="text-danger"></span>
 				</div>
 
@@ -86,7 +85,15 @@
 
 				<div class="row pt-2">
 					<div class="col-6 col-md-3">
-						<button type="submit" class="btn btn-primary form-control">Submit</button>
+						@if(Model.Product.Id != 0) {
+							<button type="submit" class="btn btn-primary form-control">Update</button>
+						}
+						else
+						{
+							<button type="submit" class="btn btn-primary form-control">Submit</button>
+						}
+
+						
 					</div>
 					<div class="col-6 col-md-3">
 						<a asp-controller="Product" asp-action="Index" asp-area="Admin" class="btn btn-outline-secondary border form-control"> Back to list</a>
@@ -107,6 +114,26 @@
 
 @section Scripts {
 	@{
+		<script>
+			tinymce.init({
+			  selector: 'textarea',
+			  plugins: [
+				// Core editing features
+				'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'lists', 'table', 'visualblocks', 'wordcount',
+				// Your account includes a free trial of TinyMCE premium features
+				// Try the most popular premium features until Apr 20, 2025:
+				'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown','importword', 'exportword', 'exportpdf'
+			  ],
+			  toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap ',
+			  tinycomments_mode: 'embedded',
+			  tinycomments_author: 'Author name',
+			  mergetags_list: [
+				{ value: 'First.Name', title: 'First Name' },
+				{ value: 'Email', title: 'Email' },
+			  ],
+			  ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+			});
+		</script>
 		<partial name="_ValidationScriptsPartial" />
 	}
 }
