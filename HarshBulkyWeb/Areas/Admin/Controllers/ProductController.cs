@@ -26,7 +26,7 @@ namespace HarshBulkyWeb.Areas.Admin.Controllers
             return View(products);
         }
 
-        public IActionResult Create()
+        public IActionResult Upsert(int? id)  //Upsert = Update and Insert
         {
             ProductVM productVM = new()
             {
@@ -38,37 +38,29 @@ namespace HarshBulkyWeb.Areas.Admin.Controllers
                 }),
                 Product = new Product()
             };
-            return View(productVM);
+
+            if (id == null || id == 0)
+            {
+                // Insert / Create
+                return View(productVM);
+            }
+            else
+            {
+                //Update 
+
+                productVM.Product = _unitOfWork.Product.Get(u => u.Id == id);
+                return View(productVM);
+            }
         }
 
         [HttpPost]
-        public IActionResult Create(ProductVM obj)
+        public IActionResult Upsert(ProductVM productVM, IFormFile? file)
         {
             if (ModelState.IsValid)
             {
-                _unitOfWork.Product.Add(obj.Product);
+                _unitOfWork.Product.Add(productVM.Product);
                 _unitOfWork.Save();
                 TempData["success"] = "Product created successfully!";
-
-                return RedirectToAction("Index");
-            }
-            return View();
-        }
-
-        public IActionResult Edit(int id)
-        {
-            Product product = _unitOfWork.Product.Get(u => u.Id == id);
-            return View(product);
-        }
-
-        [HttpPost]
-        public IActionResult Edit(ProductVM productVM)
-        {
-            if (ModelState.IsValid)
-            {
-                _unitOfWork.Product.Update(productVM.Product);
-                _unitOfWork.Save();
-                TempData["success"] = "Product updated successfully!";
 
                 return RedirectToAction("Index");
             }
@@ -80,12 +72,12 @@ namespace HarshBulkyWeb.Areas.Admin.Controllers
                        Text = u.Name,
                        Value = u.CategoryId.ToString()
                    });
-                    
+
                 return View(productVM);
             }
-
             return View();
         }
+         
         public IActionResult Delete(int id)
         {
             Product product = _unitOfWork.Product.Get(u => u.Id == id);
