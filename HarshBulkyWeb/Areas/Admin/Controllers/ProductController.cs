@@ -1,5 +1,6 @@
 ﻿using HarshBulky.DataAccess.Repository.IRepository;
 using HarshBulky.Models;
+using HarshBulky.Models.ViewModels;
 using Humanizer.Localisation.DateToOrdinalWords;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -27,37 +28,25 @@ namespace HarshBulkyWeb.Areas.Admin.Controllers
 
         public IActionResult Create()
         {
-            /*  
-              Projections in EF Core. Very Powerfull feature 
-              Coverting IEnumerable<Category> to IEnumerable<SelectListItem> dynamically in single command.
-           */
-
-            IEnumerable<SelectListItem> categoryList = _unitOfWork.Category.GetAll().
+            ProductVM productVM = new()
+            {
+                CategoryList = _unitOfWork.Category.GetAll().
                 Select(u => new SelectListItem
                 {
                     Text = u.Name,
                     Value = u.CategoryId.ToString()
-                });
-
-
-            /*
-             Note:  ViewBad internally inserts data into ViewData dictionary. 
-                    So the key of ViewData and property of ViewBad must NOT match
-                    what does this mean, explain in simple terms with example
-             */
-
-            //ViewBag.CategoryList = categoryList;  //using ViewBag to send the categoryList to view.
-
-            ViewData["CategoryList"]= categoryList;
-            return View();
+                }),
+                Product = new Product()
+            };
+            return View(productVM);
         }
 
         [HttpPost]
-        public IActionResult Create(Product obj)
+        public IActionResult Create(ProductVM obj)
         {
             if (ModelState.IsValid)
             {
-                _unitOfWork.Product.Add(obj);
+                _unitOfWork.Product.Add(obj.Product);
                 _unitOfWork.Save();
                 TempData["success"] = "Product created successfully!";
 
@@ -73,16 +62,28 @@ namespace HarshBulkyWeb.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(Product obj)
+        public IActionResult Edit(ProductVM productVM)
         {
             if (ModelState.IsValid)
             {
-                _unitOfWork.Product.Update(obj);
+                _unitOfWork.Product.Update(productVM.Product);
                 _unitOfWork.Save();
                 TempData["success"] = "Product updated successfully!";
 
                 return RedirectToAction("Index");
             }
+            else
+            {
+                productVM.CategoryList = _unitOfWork.Category.GetAll().
+                   Select(u => new SelectListItem
+                   {
+                       Text = u.Name,
+                       Value = u.CategoryId.ToString()
+                   });
+                    
+                return View(productVM);
+            }
+
             return View();
         }
         public IActionResult Delete(int id)
@@ -99,7 +100,7 @@ namespace HarshBulkyWeb.Areas.Admin.Controllers
             {
                 Product product = _unitOfWork.Product.Get(u => u.Id == id);
 
-                if (product==null)  return NotFound();
+                if (product == null) return NotFound();
 
                 _unitOfWork.Product.Remove(product);
                 _unitOfWork.Save();
