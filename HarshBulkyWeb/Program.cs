@@ -18,13 +18,20 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddRazorPages();
-
-builder.Services.AddIdentity<IdentityUser,IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>();
+ 
+builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-builder.Services.AddScoped<IEmailSender, EmailSender>();
+builder.Services.AddSingleton<IEmailSender>(new EmailSender(
+    smtpHost: "smtp.gmail.com",
+    smtpPort: 587,
+    smtpUser: "REMOVED_EMAIL",
+    smtpPass: "REMOVED_PASSWORD" // Replace this with your Gmail password
+));
 
 // Add logging (this is usually added by default in newer templates)
 builder.Services.AddLogging();
@@ -53,3 +60,5 @@ app.MapControllerRoute(
     pattern: "{area=Customer}/{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+
