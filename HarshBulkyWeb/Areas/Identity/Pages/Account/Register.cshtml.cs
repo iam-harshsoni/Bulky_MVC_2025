@@ -154,7 +154,7 @@ namespace HarshBulkyWeb.Areas.Identity.Pages.Account
 
 
                     //Added by me, adding role to the user, this will assign a role to the user, which is selected by user during registration..
-                    if (string.IsNullOrEmpty(Input.Role))
+                    if (!string.IsNullOrEmpty(Input.Role))
                     {
                         await _userManager.AddToRoleAsync(user, Input.Role);
                     }

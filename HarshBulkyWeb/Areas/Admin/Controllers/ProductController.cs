@@ -1,7 +1,9 @@
 ﻿using HarshBulky.DataAccess.Repository.IRepository;
 using HarshBulky.Models;
 using HarshBulky.Models.ViewModels;
+using HarshBulky.Utility;
 using Humanizer.Localisation.DateToOrdinalWords;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore.ValueGeneration.Internal;
@@ -10,6 +12,7 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pag
 namespace HarshBulkyWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;

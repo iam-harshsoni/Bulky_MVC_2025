@@ -1,11 +1,14 @@
 ﻿using HarshBulky.DataAccess.Data;
 using HarshBulky.DataAccess.Repository.IRepository;
 using HarshBulky.Models;
+using HarshBulky.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HarshBulkyWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class CategoryController : Controller
     {
 

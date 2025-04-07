@@ -50,6 +50,9 @@ namespace HarshBulky.Utility
                 // Log the exception or handle it as needed
                 throw new InvalidOperationException("Failed to send email.", ex);
             }
+
+
         }
+
     }
 }
