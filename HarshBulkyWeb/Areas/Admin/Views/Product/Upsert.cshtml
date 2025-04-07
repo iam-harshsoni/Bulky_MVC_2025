@@ -19,7 +19,13 @@
 			<div class="p-0 mt-0">
 				<input hidden asp-for="Product.Id" />
 				<input hidden asp-for="Product.ImageUrl" />
-
+				<div class="row">
+					<div class="col-6 col-md-2 pb-1">
+						<a asp-controller="Product" asp-action="Index" class="btn btn-outline-primary bg-gradient mb-5 fw-semibold btn-sm text-uppercase">
+							<small>Back to Product List</small>
+						</a>
+					</div>
+				</div>
 				<div class="row">
 					<div class="col-10">
 						<div class="form-floating py-2 col-12">
