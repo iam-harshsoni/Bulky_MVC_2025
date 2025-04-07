@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
@@ -106,15 +107,23 @@ namespace HarshBulkyWeb.Areas.Identity.Pages.Account
 
             // Added by me, creating Roles and RoleList properties
             public string? Role { get; set; }
-            public IEnumerable<SelectListItem> RoleList  { get; set; }
-        }
+            [ValidateNever]
+            public IEnumerable<SelectListItem> RoleList { get; set; }
 
+            [Required]
+            public string? Name { get; set; }
+            public string? StreetAddress { get; set; }
+            public string? City { get; set; }
+            public string? State { get; set; }
+            public string? PostalCode { get; set; }
+            public string? PhoneNumber { get; set; }
+        }
 
         public async Task OnGetAsync(string returnUrl = null)
         {
 
             // Added by me, Helper code to insert roles in the database for once, if there is not roles.
-            if (! _roleManager.RoleExistsAsync(SD.Role_Customer).GetAwaiter().GetResult())  // have to add this GetAwaiter().GetResult() because its a Async method and we have to write await, but when we are calling here we cannot do that.
+            if (!_roleManager.RoleExistsAsync(SD.Role_Customer).GetAwaiter().GetResult())  // have to add this GetAwaiter().GetResult() because its a Async method and we have to write await, but when we are calling here we cannot do that.
             {
                 _roleManager.CreateAsync(new IdentityRole(SD.Role_Customer)).GetAwaiter().GetResult();
                 _roleManager.CreateAsync(new IdentityRole(SD.Role_Company)).GetAwaiter().GetResult();
@@ -146,6 +155,15 @@ namespace HarshBulkyWeb.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+
+                // added by me
+                user.Name = Input.Name;
+                user.StreetAddress = Input.StreetAddress;
+                user.City = Input.City;
+                user.State = Input.State;
+                user.PostalCode = Input.PostalCode;
+                user.PhoneNumber = Input.PhoneNumber;
+
                 var result = await _userManager.CreateAsync(user, Input.Password);
 
                 if (result.Succeeded)
@@ -154,15 +172,16 @@ namespace HarshBulkyWeb.Areas.Identity.Pages.Account
 
 
                     //Added by me, adding role to the user, this will assign a role to the user, which is selected by user during registration..
-                    if (!string.IsNullOrEmpty(Input.Role))
+                    if (!String.IsNullOrEmpty(Input.Role))
                     {
                         await _userManager.AddToRoleAsync(user, Input.Role);
                     }
-                    else{
+                    else
+                    {
                         await _userManager.AddToRoleAsync(user, SD.Role_Customer);
                     }
 
-                        var userId = await _userManager.GetUserIdAsync(user);
+                    var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
