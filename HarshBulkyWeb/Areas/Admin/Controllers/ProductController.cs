@@ -14,11 +14,13 @@ namespace HarshBulkyWeb.Areas.Admin.Controllers
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ILogger<ProductController> _logger;
 
-        public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment)
+        public ProductController(IUnitOfWork unitOfWork, IWebHostEnvironment webHostEnvironment, ILogger<ProductController> logger)
         {
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
+            _logger = logger;
         }
 
         public IActionResult Index()
@@ -57,87 +59,105 @@ namespace HarshBulkyWeb.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult Upsert(ProductVM productVM, IFormFile? file)
         {
+            // Server-side model validation - ensures data integrity before processing
             if (ModelState.IsValid)
             {
-                // Get the absolute path to the web root directory (e.g., wwwroot).
-                string wwwRootPath = _webHostEnvironment.WebRootPath;
+                string webRootPath = _webHostEnvironment.WebRootPath;
 
-                // Check if a file was uploaded.
-                if (file != null)
+                // Handling file uploads robustly
+                if (file != null && file.Length > 0) // Ensure a file is actually selected and not empty
                 {
-                    // Generate a unique file name to avoid naming conflicts.
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    // Define the path to the product images directory within the web root.
-                    string productPath = Path.Combine(wwwRootPath, @"images\product");
+                    string productImagesPath = Path.Combine(webRootPath, "images", "product");
 
-                    // Check if an existing image URL is present (for update scenarios).
+                    // Create directory if it doesn't exist - prevents potential IO exceptions
+                    Directory.CreateDirectory(productImagesPath);
+
+                    // Implementing update logic to handle existing images
                     if (!string.IsNullOrEmpty(productVM.Product.ImageUrl))
                     {
-                        // Construct the full path to the old image file.
-                        var oldImagePath = Path.Combine(wwwRootPath, productVM.Product.ImageUrl.TrimStart('\\'));
+                        string oldImagePath = Path.Combine(webRootPath, productVM.Product.ImageUrl.TrimStart('\\'));
 
-                        // Check if the old image file exists.
-                        if (System.IO.File.Exists(oldImagePath))
+                        try
                         {
-                            // Delete the old image file from the file system.
-                            System.IO.File.Delete(oldImagePath);
+                            if (System.IO.File.Exists(oldImagePath))
+                            {
+                                System.IO.File.Delete(oldImagePath);
+                                _logger.LogInformation($"Successfully deleted old image: {oldImagePath}");
+                            }
+                        }
+                        catch (IOException ex)
+                        {
+                            _logger.LogError($"Error deleting old image: {oldImagePath}. Exception: {ex.Message}");
+                            ModelState.AddModelError(string.Empty, "An error occurred while updating the image. Please try again.");
+                            // Re-populate CategoryList and return the view with the error
+                            productVM.CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem { Text = u.Name, Value = u.CategoryId.ToString() });
+                            return View(productVM);
                         }
                     }
 
-                    // Create the full path to save the new image file.
-                    string filePath = Path.Combine(productPath, fileName);
+                    string filePath = Path.Combine(productImagesPath, fileName);
 
-                    // Save the uploaded file to the specified directory.
-                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    // Saving the new file using a try-catch block for error handling
+                    try
                     {
-                        file.CopyTo(fileStream);
+                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        {
+                            file.CopyTo(fileStream);
+                        }
+                        productVM.Product.ImageUrl = Path.Combine("\\images\\product\\", fileName); // Using Path.Combine for platform-independent path construction
+                        _logger.LogInformation($"Successfully saved image: {filePath}");
+                    }
+                    catch (IOException ex)
+                    {
+                        _logger.LogError($"Error saving image: {filePath}. Exception: {ex.Message}");
+                        ModelState.AddModelError(string.Empty, "An error occurred while saving the image. Please try again.");
+                        // Re-populate CategoryList and return the view with the error
+                        productVM.CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem { Text = u.Name, Value = u.CategoryId.ToString() });
+                        return View(productVM);
+                    }
+                }
+                else if (productVM.Product.Id == 0)
+                {
+                    // If creating a new product and no file is uploaded, ensure ImageUrl isn't accidentally set
+                    productVM.Product.ImageUrl = null;
+                }
+                // For update scenarios where the user might not upload a new image, we retain the existing ImageUrl
+
+                // Centralized data persistence logic
+                try
+                {
+                    if (productVM.Product.Id == 0)
+                    {
+                        _unitOfWork.Product.Add(productVM.Product);
+                        _logger.LogInformation($"Product with ID {productVM.Product.Title} added successfully.");
+                    }
+                    else
+                    {
+                        _unitOfWork.Product.Update(productVM.Product);
+                        _logger.LogInformation($"Product with ID {productVM.Product.Id} updated successfully.");
                     }
 
-                    // Update the ProductViewModel with the relative URL of the saved image.
-                    // This URL will be stored in the database.
-                    productVM.Product.ImageUrl = @"\images\product\" + fileName;
-                }
+                    _unitOfWork.Save(); // Consider implementing asynchronous SaveChangesAsync in a production environment
+                    TempData["success"] = "Product saved successfully!"; // Using a more generic message
 
-                // Check if it's a new product (Id is 0) or an existing product being updated.
-                if (productVM.Product.Id == 0)
+                    return RedirectToAction(nameof(Index)); // Using nameof for better refactoring support
+                }
+                catch (Exception ex)
                 {
-                    // Add the new product to the database.
-                    _unitOfWork.Product.Add(productVM.Product);
+                    _logger.LogError($"Error saving product to the database. Exception: {ex.Message}");
+                    ModelState.AddModelError(string.Empty, "An error occurred while saving the product. Please try again.");
+                    // Re-populate CategoryList and return the view with the error
+                    productVM.CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem { Text = u.Name, Value = u.CategoryId.ToString() });
+                    return View(productVM);
                 }
-                else
-                {
-                    // Update the existing product in the database.
-                    _unitOfWork.Product.Update(productVM.Product);
-                }
-
-                // Save all changes made to the database.
-                _unitOfWork.Save();
-
-                // Store a success message in TempData to be displayed on the next page load.
-                TempData["success"] = "Product created successfully!";
-
-                // Redirect the user to the Index action (likely the product listing page).
-                return RedirectToAction("Index");
             }
             else
             {
-                // If the model state is not valid (validation errors occurred),
-                // repopulate the CategoryList for the view.
-                productVM.CategoryList = _unitOfWork.Category.GetAll().
-                    Select(u => new SelectListItem
-                    {
-                        Text = u.Name,
-                        Value = u.CategoryId.ToString()
-                    });
-
-                // Return the ProductViewModel back to the view so the user can see the validation errors
-                // and correct the input.
-                return View(productVM);
+                // If ModelState is invalid, re-populate the CategoryList for the view
+                productVM.CategoryList = _unitOfWork.Category.GetAll().Select(u => new SelectListItem { Text = u.Name, Value = u.CategoryId.ToString() });
+                return View(productVM); // Return the model with validation errors
             }
-
-            // This line should ideally not be reached if the logic above is correct.
-            // It's likely a fallback in case of unexpected behavior.
-            return View();
         }
 
         #region API Call
