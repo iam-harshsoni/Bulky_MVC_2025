@@ -46,8 +46,8 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddSingleton<IEmailSender>(new EmailSender(
     smtpHost: "smtp.gmail.com",
     smtpPort: 587,
-    smtpUser: "REMOVED_EMAIL",
-    smtpPass: "REMOVED_PASSWORD" // Replace this with your Gmail password
+    smtpUser: "your-email@gmail.com",
+    smtpPass: "your-password" // Replace this with your Gmail password
 ));
 
 // Add logging (this is usually added by default in newer templates)
