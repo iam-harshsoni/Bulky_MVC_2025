@@ -1,17 +1,21 @@
 ﻿using HarshBulky.Models;
 using Microsoft.EntityFrameworkCore;
 using Bogus;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace HarshBulky.DataAccess.Data
 {
     //Primary Constructor
-    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
+    public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : IdentityDbContext<IdentityUser>(options)
     {
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder); // when we have IdentityDbContext we have to add this line to avoid error.
+
             modelBuilder.Entity<Category>().HasData(
 
                 new Category { CategoryId = 1, Name = "Action", DisplayOrder = 1 },
