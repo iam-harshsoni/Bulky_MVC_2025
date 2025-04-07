@@ -18,7 +18,14 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddRazorPages();
+
+/*
+    Have to add  .AddDefaultTokenProviders(); to prevent the error 'NotSupportedException: No IUserTwoFactorTokenProvider<TUser> named 'Default' is registered.'
+    While using 'AddDefaultIdentity' its been taken care, but here we are using Custom AddIdentiy, so we will get this above error, and for that we need to add this  .AddDefaultTokenProviders(); 
+
+    Error occured because while registering, its generating the EmailConfirmationToken and for that rewuires  .AddDefaultTokenProviders();
  
+ */
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();

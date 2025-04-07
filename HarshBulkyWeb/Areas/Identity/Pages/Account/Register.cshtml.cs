@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 
@@ -102,11 +103,17 @@ namespace HarshBulkyWeb.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            // Added by me, creating Roles and RoleList properties
+            public string? Role { get; set; }
+            public IEnumerable<SelectListItem> RoleList  { get; set; }
         }
 
 
         public async Task OnGetAsync(string returnUrl = null)
         {
+
+            // Added by me, Helper code to insert roles in the database for once, if there is not roles.
             if (! _roleManager.RoleExistsAsync(SD.Role_Customer).GetAwaiter().GetResult())  // have to add this GetAwaiter().GetResult() because its a Async method and we have to write await, but when we are calling here we cannot do that.
             {
                 _roleManager.CreateAsync(new IdentityRole(SD.Role_Customer)).GetAwaiter().GetResult();
@@ -115,6 +122,15 @@ namespace HarshBulkyWeb.Areas.Identity.Pages.Account
                 _roleManager.CreateAsync(new IdentityRole(SD.Role_Employee)).GetAwaiter().GetResult();
             }
 
+            // This is a EF Core Projection, that will take the Roles and put it in the RoleList which will be used to Display List of Roles in Register form, for user to select during User Registration
+            Input = new()
+            {
+                RoleList = _roleManager.Roles.Select(x => x.Name).Select(i => new SelectListItem
+                {
+                    Text = i,
+                    Value = i.ToString()
+                })
+            };
 
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
@@ -136,7 +152,17 @@ namespace HarshBulkyWeb.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    var userId = await _userManager.GetUserIdAsync(user);
+
+                    //Added by me, adding role to the user, this will assign a role to the user, which is selected by user during registration..
+                    if (string.IsNullOrEmpty(Input.Role))
+                    {
+                        await _userManager.AddToRoleAsync(user, Input.Role);
+                    }
+                    else{
+                        await _userManager.AddToRoleAsync(user, SD.Role_Customer);
+                    }
+
+                        var userId = await _userManager.GetUserIdAsync(user);
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
